@@ -7,7 +7,7 @@ function UpdateTask() {
   const handleUpdateTask = async () => {
     const response = await fetch('http://localhost:5226/api/update-task', {
       method: 'POST',
-      body: JSON.stringify({ taskId, status }),
+      body: JSON.stringify({ UserId, Percentage }),
       headers: { 'Content-Type': 'application/json' },
     });
 
