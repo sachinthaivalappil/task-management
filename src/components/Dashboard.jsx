@@ -1,33 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios'; // Import axios for API calls
 
-function Dashboard({ userType }) {
+function Dashboard({ userType, userId }) {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    // Fetch dashboard data based on user type
+    // Fetch dashboard data based on user type and userId
     const fetchData = async () => {
-      if (userType === 'admin') {
-        // Fetch data for admin
-        const response = await fetch('http://localhost:5226/api/admin-dashboard');
-        const data = await response.json();
-        setTasks(data);
-      } else if (userType === 'user') {
-        // Fetch data for user
-        const response = await fetch('http://localhost:5226/api/user-dashboard');
-        const data = await response.json();
-        setTasks(data);
+      try {
+        const response = await axios.post(
+          'http://localhost:5226/products/fetch-task',
+          {
+            userId,
+            userType,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json', // Set content type to JSON
+            },
+          }
+        );
+        setTasks(response.data); // Axios automatically parses JSON
+      } catch (error) {
+        console.error('Error fetching tasks:', error);
       }
     };
 
-    if (userType) {
+    if (userType && userId) {
       fetchData();
     }
-  }, [userType]);
+  }, [userType, userId]); // Include userId in dependencies
+
+  // Function to handle task updates
+  const handleUpdateTask = (taskId) => {
+    console.log('Updating task', taskId);
+    // Add logic to update task status here
+  };
 
   return (
     <div>
       <h2>Dashboard</h2>
+
+      {/* Links for admin and user */}
       {userType === 'admin' && (
         <div>
           <Link to="/assign-task">Assign Task</Link>
@@ -39,6 +54,7 @@ function Dashboard({ userType }) {
         </div>
       )}
 
+      {/* Task Table */}
       <table>
         <thead>
           <tr>
@@ -49,27 +65,28 @@ function Dashboard({ userType }) {
           </tr>
         </thead>
         <tbody>
-          {tasks.map((task) => (
-            <tr key={task.id}>
-              <td>{task.id}</td>
-              <td>{task.name}</td>
-              <td>{task.status}</td>
-              {userType === 'user' && (
-                <td>
-                  <button onClick={() => handleUpdateTask(task.id)}>Update</button>
-                </td>
-              )}
+          {tasks.length > 0 ? (
+            tasks.map((task) => (
+              <tr key={task.id}>
+                <td>{task.id}</td>
+                <td>{task.name}</td>
+                <td>{task.status}</td>
+                {userType === 'user' && (
+                  <td>
+                    <button onClick={() => handleUpdateTask(task.id)}>Update</button>
+                  </td>
+                )}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={userType === 'user' ? 4 : 3}>No tasks available</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
-
-  function handleUpdateTask(taskId) {
-    // Logic to update task status
-    console.log('Updating task', taskId);
-  }
 }
 
 export default Dashboard;

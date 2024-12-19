@@ -34,8 +34,12 @@ const Login = () => {
       if (response.status === 200) {
         console.log('Login successful:', response.data);
 
-        // Store user type (or token) in local storage or global state
+        // Store user type (or tokean) in local storage or global state
         localStorage.setItem('userType', userType); // Store user type for later use
+        localStorage.setItem('userId', userId);
+        setUserType(userType);
+        setUserId(userId);
+ 
 
         // Navigate to the appropriate page
         if (userType === 'admin') {
