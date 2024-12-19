@@ -40,51 +40,101 @@ function Dashboard({ userType, userId }) {
 
   return (
     <div>
-      <h2>Dashboard</h2>
+      {/* Buttons at the top */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+        {userType === 'admin' && (
+          <button
+            onClick={() => navigate('/assign-task')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            Assign Task
+          </button>
+        )}
+        {userType === 'user' && (
+          <button
+            onClick={() => navigate('/update-task')}
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#28a745',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            Update Task
+          </button>
+        )}
+      </div>
 
-      {/* Links for admin and user */}
-      {userType === 'admin' && (
-        <div>
-          <Link to="/assign-task">Assign Task</Link>
-        </div>
-      )}
-      {userType === 'user' && (
-        <div>
-          <Link to="/update-task">Update Task</Link>
-        </div>
-      )}
-
-      {/* Task Table */}
-      <table>
-        <thead>
-          <tr>
-            <th>Task ID</th>
-            <th>Task Name</th>
-            <th>Status</th>
-            {userType === 'user' && <th>Action</th>}
-          </tr>
-        </thead>
-        <tbody>
-          {tasks.length > 0 ? (
-            tasks.map((task) => (
-              <tr key={task.id}>
-                <td>{task.id}</td>
-                <td>{task.name}</td>
-                <td>{task.status}</td>
-                {userType === 'user' && (
+      {/* Tables based on user type */}
+      <h2>{userType === 'admin' ? 'Admin Dashboard' : 'User Dashboard'}</h2>
+      {userType === 'admin' ? (
+        // Admin Table
+        <table>
+          <thead>
+            <tr>
+              <th>Task ID</th>
+              <th>Task Name</th>
+              <th>Assigned To</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <tr key={task.id}>
+                  <td>{task.id}</td>
+                  <td>{task.name}</td>
+                  <td>{task.assignedTo}</td>
+                  <td>{task.status}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No tasks available</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      ) : (
+        // User Table
+        <table>
+          <thead>
+            <tr>
+              <th>Task ID</th>
+              <th>Task Name</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <tr key={task.id}>
+                  <td>{task.id}</td>
+                  <td>{task.name}</td>
+                  <td>{task.status}</td>
                   <td>
                     <button onClick={() => handleUpdateTask(task.id)}>Update</button>
                   </td>
-                )}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4">No tasks available</td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={userType === 'user' ? 4 : 3}>No tasks available</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
